@@ -8,17 +8,45 @@ import java.util.Scanner;
 
 import static java.lang.Float.parseFloat;
 
-public class SteamRoomTesting {
+public class Testing {
 
     ArrayList<Profile> profiles = new ArrayList<>();
-
+    Scanner keyboard = new Scanner(System.in);
+    ArrayList<String> input;
+    int inputIndex = 0;
+    public String output = "";
     private Profile selectedProfile;
 
-    public SteamRoomTesting(){
+    public Testing(ArrayList<String> input) throws InterruptedException {
+        this.input = input;
         readProfiles();
         if(!profiles.isEmpty()){
             this.selectedProfile = profiles.get(0);
         }
+        test();
+    }
+
+    public void test () throws InterruptedException {
+        int chosenOption = 0;
+        while(chosenOption != 5) {
+
+            chosenOption = Integer.parseInt(input.get(inputIndex));
+            inputIndex++;
+            if(chosenOption == 1){
+                chooseProfile();
+            }
+            else if(chosenOption == 2){
+                createProfile();
+            }
+            else if(chosenOption == 3){
+                startRunning();
+            }
+            else if(chosenOption == 4){
+                startRunning();
+            }
+        }
+        System.out.println(output);
+        //return output;
     }
 
     public void readProfiles(){
@@ -51,11 +79,13 @@ public class SteamRoomTesting {
         }
     }
 
-    public String chooseProfile(String profileNumberString){
-        int profileNumber = Integer.parseInt(profileNumberString);
+    public void chooseProfile(){
+
+        int profileNumber = Integer.parseInt(input.get(inputIndex));
+        inputIndex++;
         selectedProfile = profiles.get(profileNumber - 1);
-        return ("name: " + selectedProfile.getName() + " temperature: " + selectedProfile.getWantedTemperature() +
-                " humidity: " +  selectedProfile.getWantedHumidity());
+        output = output.concat("Chosen profile: "+ selectedProfile.getName() + ", temperature: " + selectedProfile.getWantedTemperature() +
+                ", humidity: " +  selectedProfile.getWantedHumidity());
 
     }
 
@@ -76,63 +106,79 @@ public class SteamRoomTesting {
             return "Please insert a humidity >= 97 and <= 100.";
         }
         return "Data is correct.";
+
     }
 
-    public void createProfile(ArrayList<String> inputs){
+    public void createProfile(){
 
-        int i;
-        String name = inputs.get(0);
-        int wantedTemperature = Integer.parseInt(inputs.get(1));
-        int wantedHumidity = Integer.parseInt(inputs.get(2));
-        i = 3;
+        String name = input.get(inputIndex);
+        inputIndex++;
+        int wantedTemperature = Integer.parseInt(input.get(inputIndex));
+        inputIndex++;
+        int wantedHumidity = Integer.parseInt(input.get(inputIndex));
+        inputIndex++;
 
         while (!isDataCorrect(name, wantedTemperature, wantedHumidity).equals("Data is correct.")){
-            name = inputs.get(i);
-            i++;
-            wantedTemperature = Integer.parseInt(inputs.get(i));
-            i++;
-            wantedHumidity = Integer.parseInt(inputs.get(i));
-            i++;
+            output = output.concat(isDataCorrect(name, wantedTemperature, wantedHumidity) + "\n");
+            name = input.get(inputIndex);
+            inputIndex++;
+            wantedTemperature = Integer.parseInt(input.get(inputIndex));
+            inputIndex++;
+            wantedHumidity = Integer.parseInt(input.get(inputIndex));
+            inputIndex++;
         }
 
-        String answer = inputs.get(i);
+        String answer = input.get(inputIndex);
 
         if(answer.equals("1")){
             Profile profile = new Profile(wantedTemperature, wantedHumidity, name);
             profiles.add(profile);
+            output = output.concat("Profile created. \n");
         }
 
     }
 
-    public String startRunning(ArrayList<String> inputs) throws InterruptedException {
-
-        float currentHumidity = parseFloat(inputs.get(0));
-        float currentTemperature = parseFloat(inputs.get(1));
+    public void startRunning() throws InterruptedException {
+        float currentHumidity = parseFloat(input.get(inputIndex));
+        inputIndex++;
+        float currentTemperature = parseFloat(input.get(inputIndex));
+        inputIndex++;
         boolean stop = false;
         boolean waterSupply = true;
         boolean others = true;
         boolean doorOpen = false;
         int doorTimer = 0;
         int minutesUtilSchedule;
-        String output = "";
         boolean scheduleLater;
-        if(inputs.get(3).equals("True")){
+        boolean scheduleError = false;
+
+        if(input.get(inputIndex).equals("True")){
             scheduleLater = true;
             output = output.concat("Schedule programmed.\n");
         }
         else {
             scheduleLater = false;
         }
-        int i = 4;
+        inputIndex++;
 
         if(scheduleLater){
-            minutesUtilSchedule = Integer.parseInt(inputs.get(i));
-            i++;
+            minutesUtilSchedule = Integer.parseInt(input.get(inputIndex));
+            inputIndex++;
 
-            while(minutesUtilSchedule != 0){
-                output = output.concat("Steam room will start in " + minutesUtilSchedule + " minutes.\n");
-                minutesUtilSchedule--;
+            if(minutesUtilSchedule < Math.max(selectedProfile.getWantedHumidity() - currentHumidity,
+                    selectedProfile.getWantedTemperature()) - currentTemperature){
+                output = output.concat("There is not enough time for the steam room to be ready.");
+                stop = true;
+                scheduleError = true;
             }
+
+            if (!stop){
+                while(minutesUtilSchedule != 0){
+                    output = output.concat("Steam room will start in " + minutesUtilSchedule + " minutes.\n");
+                    minutesUtilSchedule--;
+                }
+            }
+
         }
 
         while(!stop && waterSupply && others){
@@ -140,8 +186,8 @@ public class SteamRoomTesting {
             output = output.concat("Current temperature: " + currentTemperature + "\n");
             output = output.concat("Current humidity: " + currentHumidity + "\n");
 
-            String command = inputs.get(i);
-            i++;
+            String command = input.get(inputIndex);
+            inputIndex++;
 
             switch (command) {
                 case "1" -> doorOpen = !doorOpen;
@@ -182,6 +228,11 @@ public class SteamRoomTesting {
             if(currentHumidity < selectedProfile.getWantedHumidity()){
                 currentHumidity++;
             }
+            if(currentHumidity == selectedProfile.getWantedHumidity() &&
+                    currentTemperature == selectedProfile.getWantedTemperature()){
+                output = output.concat("The steam room has reached the desired settings.\n");
+            }
+
 
         }
 
@@ -189,12 +240,14 @@ public class SteamRoomTesting {
             // the system has stopped because of the lack of water supply
             output = output.concat("The system has stopped because there was no water supply.\n");
             output = output.concat("-----------------------------\n");
-        } else if (stop && !doorOpen){
+        } else if (stop && !doorOpen && !scheduleError){
             // the system has stopped because the user wanted it to
             output = output.concat("The system has stopped successfully.\n");
             output = output.concat("-----------------------------\n");
+
         }
-        return output;
+
+
     }
 
 

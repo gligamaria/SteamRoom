@@ -3,7 +3,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class SteamRoom {
@@ -19,13 +18,12 @@ public class SteamRoom {
             this.selectedProfile = profiles.get(0);
         }
         int chosenOption = 0;
-        while(chosenOption != 4) {
+        while(chosenOption != 5) {
 
             System.out.println("1. Choose a profile");
             System.out.println("2. Create a profile");
             System.out.println("3. Start");
             System.out.println("4. Schedule for later");
-            System.out.println("5. Stop");
 
             chosenOption = keyboard.nextInt();
             if(chosenOption == 1){
@@ -154,17 +152,28 @@ public class SteamRoom {
         boolean doorOpen = false;
         int doorTimer = 0;
         int minutesUtilSchedule;
+        boolean scheduleError = false;
 
         if(scheduleLater){
             System.out.println("Please insert in how many minutes the system should start.");
             minutesUtilSchedule = keyboard.nextInt();
 
-            System.out.println("Schedule programmed.");
-            while(minutesUtilSchedule != 0){
-                System.out.println("Steam room will start in " + minutesUtilSchedule + " minutes.");
-                Thread.sleep(1000);
-                minutesUtilSchedule--;
+            if(minutesUtilSchedule < Math.max(selectedProfile.getWantedHumidity() - currentHumidity,
+                    selectedProfile.getWantedTemperature()) - currentTemperature){
+                System.out.println("There is not enough time for the steam room to be ready.");
+                stop = true;
+                scheduleError = true;
             }
+
+            if (!stop){
+                System.out.println("Schedule programmed.");
+                while(minutesUtilSchedule != 0){
+                    System.out.println("Steam room will start in " + minutesUtilSchedule + " minutes.");
+                    Thread.sleep(1000);
+                    minutesUtilSchedule--;
+                }
+            }
+
         }
 
         while(!stop && waterSupply && others){
@@ -221,6 +230,12 @@ public class SteamRoom {
                 currentHumidity++;
             }
 
+            if(currentHumidity == selectedProfile.getWantedHumidity() &&
+                    currentTemperature == selectedProfile.getWantedTemperature()){
+                System.out.println("The steam room has reached the desired settings.");
+            }
+
+
             Thread.sleep(1000);
         }
 
@@ -228,7 +243,7 @@ public class SteamRoom {
             // the system has stopped because of the lack of water supply
             System.out.println("The system has stopped because there was no water supply.");
             System.out.println("-----------------------------");
-        } else if (stop && !doorOpen){
+        } else if (stop && !doorOpen && !scheduleError){
             // the system has stopped because the user wanted it to
             System.out.println("The system has stopped successfully.");
             System.out.println("-----------------------------");
