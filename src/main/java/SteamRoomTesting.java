@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -7,18 +11,48 @@ import static java.lang.Float.parseFloat;
 public class SteamRoomTesting {
 
     ArrayList<Profile> profiles = new ArrayList<>();
-    Scanner keyboard = new Scanner(System.in);
 
-    private Float currentTemperature;
-    private Float currentHumidity;
     private Profile selectedProfile;
 
-    public SteamRoomTesting(Profile defaultProfile){
-        profiles.add(defaultProfile);
-        this.selectedProfile = profiles.get(0);
+    public SteamRoomTesting(){
+        readProfiles();
+        if(!profiles.isEmpty()){
+            this.selectedProfile = profiles.get(0);
+        }
     }
 
-    public String chooseProfile(int profileNumber){
+    public void readProfiles(){
+        try {
+            File myObj = new File("profiles.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String name = myReader.nextLine();
+                String temperature = myReader.nextLine();
+                String humidity = myReader.nextLine();
+                Profile newProfile = new Profile(Integer.parseInt(temperature),  Integer.parseInt(humidity), name);
+                profiles.add(newProfile);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+
+    public void saveProfile(Profile profile){
+        try {
+            FileWriter myWriter = new FileWriter("profiles.txt", true);
+            myWriter.write(profile.getName() + "\n" + profile.getWantedTemperature() + "\n" + profile.getWantedHumidity() + "\n");
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public String chooseProfile(String profileNumberString){
+        int profileNumber = Integer.parseInt(profileNumberString);
         selectedProfile = profiles.get(profileNumber - 1);
         return ("name: " + selectedProfile.getName() + " temperature: " + selectedProfile.getWantedTemperature() +
                 " humidity: " +  selectedProfile.getWantedHumidity());
@@ -70,19 +104,21 @@ public class SteamRoomTesting {
 
     }
 
-    public void startRunning(ArrayList<String> inputs) throws InterruptedException {
+    public String startRunning(ArrayList<String> inputs) throws InterruptedException {
 
-        this.currentHumidity =  parseFloat(inputs.get(0));
-        this.currentTemperature = parseFloat(inputs.get(1));
+        float currentHumidity = parseFloat(inputs.get(0));
+        float currentTemperature = parseFloat(inputs.get(1));
         boolean stop = false;
         boolean waterSupply = true;
         boolean others = true;
         boolean doorOpen = false;
         int doorTimer = 0;
         int minutesUtilSchedule;
+        String output = "";
         boolean scheduleLater;
         if(inputs.get(3).equals("True")){
             scheduleLater = true;
+            output = output.concat("Schedule programmed.\n");
         }
         else {
             scheduleLater = false;
@@ -92,9 +128,17 @@ public class SteamRoomTesting {
         if(scheduleLater){
             minutesUtilSchedule = Integer.parseInt(inputs.get(i));
             i++;
+
+            while(minutesUtilSchedule != 0){
+                output = output.concat("Steam room will start in " + minutesUtilSchedule + " minutes.\n");
+                minutesUtilSchedule--;
+            }
         }
 
         while(!stop && waterSupply && others){
+
+            output = output.concat("Current temperature: " + currentTemperature + "\n");
+            output = output.concat("Current humidity: " + currentHumidity + "\n");
 
             String command = inputs.get(i);
             i++;
@@ -107,7 +151,7 @@ public class SteamRoomTesting {
 
             if(doorOpen && doorTimer <= 3){
                 doorTimer++;
-                System.out.println("Door is open!");
+                output = output.concat("Door is open!\n");
                 // the temperature and humidity decrease by half a degree because the door is open
                 currentHumidity -= 0.5f;
                 currentTemperature -= 0.5f;
@@ -117,13 +161,13 @@ public class SteamRoomTesting {
             }
 
             if(doorTimer == 2 || doorTimer == 3){
-                alertUser();
+                output = output.concat("Please close the door.\n");
             }
-            
+
             if (doorTimer > 3){
                 stop = true;
-                System.out.println("The system stopped as the door has been open for too long.");
-                System.out.println("-----------------------------");
+                output = output.concat("The system stopped as the door has been open for too long.\n");
+                output = output.concat("-----------------------------\n");
             }
 
             if(currentTemperature < selectedProfile.getWantedTemperature()){
@@ -131,31 +175,26 @@ public class SteamRoomTesting {
             }
             else if (currentTemperature == 47){
                 others = false;
-                System.out.println("A malfunction happened and the temperature was unsafe.");
-                System.out.println("-----------------------------");
+                output = output.concat("A malfunction happened and the temperature was unsafe.\n");
+                output = output.concat("-----------------------------\n");
             }
 
             if(currentHumidity < selectedProfile.getWantedHumidity()){
                 currentHumidity++;
             }
 
-            Thread.sleep(1000);
         }
 
         if (!waterSupply){
             // the system has stopped because of the lack of water supply
-            System.out.println("The system has stopped because there was no water supply.");
-            System.out.println("-----------------------------");
+            output = output.concat("The system has stopped because there was no water supply.\n");
+            output = output.concat("-----------------------------\n");
         } else if (stop && !doorOpen){
             // the system has stopped because the user wanted it to
-            System.out.println("The system has stopped successfully.");
-            System.out.println("-----------------------------");
+            output = output.concat("The system has stopped successfully.\n");
+            output = output.concat("-----------------------------\n");
         }
-
-    }
-
-    public void alertUser(){
-        System.out.println("Please close the door.");
+        return output;
     }
 
 

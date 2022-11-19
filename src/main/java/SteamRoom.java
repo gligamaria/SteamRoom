@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -7,13 +11,66 @@ public class SteamRoom {
     ArrayList<Profile> profiles = new ArrayList<>();
     Scanner keyboard = new Scanner(System.in);
 
-    private Float currentTemperature;
-    private Float currentHumidity;
     private Profile selectedProfile;
 
-    public SteamRoom(Profile defaultProfile){
-        profiles.add(defaultProfile);
-        this.selectedProfile = profiles.get(0);
+    public SteamRoom() throws InterruptedException {
+        readProfiles();
+        if(!profiles.isEmpty()){
+            this.selectedProfile = profiles.get(0);
+        }
+        int chosenOption = 0;
+        while(chosenOption != 4) {
+
+            System.out.println("1. Choose a profile");
+            System.out.println("2. Create a profile");
+            System.out.println("3. Start");
+            System.out.println("4. Schedule for later");
+            System.out.println("5. Stop");
+
+            chosenOption = keyboard.nextInt();
+            if(chosenOption == 1){
+                chooseProfile();
+            }
+            else if(chosenOption == 2){
+                createProfile();
+            }
+            else if(chosenOption == 3){
+                startRunning(25, 45, false);
+            }
+            else if(chosenOption == 4){
+                startRunning(25, 45, true);
+            }
+        }
+    }
+
+    public void readProfiles(){
+        try {
+            File myObj = new File("profiles.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String name = myReader.nextLine();
+                String temperature = myReader.nextLine();
+                String humidity = myReader.nextLine();
+                Profile newProfile = new Profile(Integer.parseInt(temperature),  Integer.parseInt(humidity), name);
+                profiles.add(newProfile);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+
+    public void saveProfile(Profile profile){
+        try {
+            FileWriter myWriter = new FileWriter("profiles.txt", true);
+            myWriter.write(profile.getName() + "\n" + profile.getWantedTemperature() + "\n" + profile.getWantedHumidity() + "\n");
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 
     public void chooseProfile(){
@@ -81,20 +138,22 @@ public class SteamRoom {
         if(answer.equals("1")){
             Profile profile = new Profile(wantedTemperature, wantedHumidity, name);
             profiles.add(profile);
+            saveProfile(profile);
             System.out.println("You have successfully created profile " + name + ".");
             System.out.println();
         }
 
     }
 
-    public void startRunning(float currentTemperature, float currentHumidity, boolean scheduleLater, int minutesUtilSchedule) throws InterruptedException {
-        this.currentHumidity = currentHumidity;
-        this.currentTemperature = currentTemperature;
+    public void startRunning(float currentTemperature, float currentHumidity, boolean scheduleLater) throws InterruptedException {
+        Float currentHumidity1 = currentHumidity;
+        Float currentTemperature1 = currentTemperature;
         boolean stop = false;
         boolean waterSupply = true;
         boolean others = true;
         boolean doorOpen = false;
         int doorTimer = 0;
+        int minutesUtilSchedule;
 
         if(scheduleLater){
             System.out.println("Please insert in how many minutes the system should start.");
@@ -141,7 +200,7 @@ public class SteamRoom {
             }
 
             if(doorTimer == 2 || doorTimer == 3){
-                alertUser();
+                System.out.println("Please close the door.");
             }
             if (doorTimer > 3){
                 stop = true;
@@ -175,10 +234,6 @@ public class SteamRoom {
             System.out.println("-----------------------------");
         }
 
-    }
-
-    public void alertUser(){
-        System.out.println("Please close the door.");
     }
 
 
