@@ -3,16 +3,17 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
-import static java.lang.Float.min;
 import static java.lang.Float.parseFloat;
 
 public class Testing {
 
+    // The code from this class follows the same logic asn the one in SteamRoom, but
+    // manages to run the system with input fed through an array list. This way, they
+    // can be tested with different orders as well.
+
     ArrayList<Profile> profiles = new ArrayList<>();
-    Scanner keyboard = new Scanner(System.in);
     ArrayList<String> input;
     int inputIndex = 0;
     public String output = "";
@@ -236,7 +237,6 @@ public class Testing {
                 output = output.concat("The steam room has reached the desired settings.\n");
             }
 
-
         }
 
         if (!waterSupply){
@@ -250,8 +250,6 @@ public class Testing {
 
         }
 
-
     }
-
 
 }

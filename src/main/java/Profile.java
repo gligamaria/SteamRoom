@@ -1,7 +1,12 @@
+
 public class Profile {
-    private String name;
-    private Integer wantedTemperature;
-    private Integer wantedHumidity;
+
+    // This class describes the profiles, having as variables
+    // name and wanted temperature and humidity.
+
+    private final String name;
+    private final Integer wantedTemperature;
+    private final Integer wantedHumidity;
 
     public Profile(Integer wantedTemperature, Integer wantedHumidity, String name){
         this.name = name;
@@ -13,23 +18,12 @@ public class Profile {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Integer getWantedTemperature() {
         return wantedTemperature;
-    }
-
-    public void setWantedTemperature(Integer wantedTemperature) {
-        this.wantedTemperature = wantedTemperature;
     }
 
     public Integer getWantedHumidity() {
         return wantedHumidity;
     }
 
-    public void setWantedHumidity(Integer wantedHumidity) {
-        this.wantedHumidity = wantedHumidity;
-    }
 }
