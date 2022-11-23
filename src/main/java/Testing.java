@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static java.lang.Float.min;
 import static java.lang.Float.parseFloat;
 
 public class Testing {
@@ -85,7 +86,7 @@ public class Testing {
         inputIndex++;
         selectedProfile = profiles.get(profileNumber - 1);
         output = output.concat("Chosen profile: "+ selectedProfile.getName() + ", temperature: " + selectedProfile.getWantedTemperature() +
-                ", humidity: " +  selectedProfile.getWantedHumidity());
+                ", humidity: " +  selectedProfile.getWantedHumidity() + "\n");
 
     }
 
@@ -129,11 +130,12 @@ public class Testing {
         }
 
         String answer = input.get(inputIndex);
-
+        inputIndex++;
         if(answer.equals("1")){
             Profile profile = new Profile(wantedTemperature, wantedHumidity, name);
             profiles.add(profile);
-            output = output.concat("Profile created. \n");
+            saveProfile(profile);
+            output = output.concat("Profile created.\n");
         }
 
     }
@@ -162,11 +164,12 @@ public class Testing {
         inputIndex++;
 
         if(scheduleLater){
+
             minutesUtilSchedule = Integer.parseInt(input.get(inputIndex));
             inputIndex++;
 
             if(minutesUtilSchedule < Math.max(selectedProfile.getWantedHumidity() - currentHumidity,
-                    selectedProfile.getWantedTemperature()) - currentTemperature){
+                    selectedProfile.getWantedTemperature() - currentTemperature)){
                 output = output.concat("There is not enough time for the steam room to be ready.");
                 stop = true;
                 scheduleError = true;

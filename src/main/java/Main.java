@@ -6,19 +6,16 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        SteamRoom steamRoom = new SteamRoom();
-
-//        ArrayList<String> second = new ArrayList<>();
-//        second.add("4");
-//        second.add("42");
-//        second.add("95");
-//        second.add("True");
-//        second.add("4");
-//        second.add("4");
-//        second.add("2");
-//        second.add("5");
-//
-//        Testing testing2 = new Testing(second);
-
+        ArrayList<String> test = new ArrayList<>();
+        // start the system with the default settings
+        test.add("3");
+        test.add("95"); // current humidity in the steam room = 95
+        test.add("42"); // current temperature in the steam room = 42
+        test.add("False"); // the schedule for later is not selected
+        test.add("1"); // door open
+        // temperature = 42.5, humidity = 95.5
+        test.add("3"); // cut the water supply
+        test.add("5"); // the application is shut down
+        Testing testing = new Testing(test);
     }
 }
