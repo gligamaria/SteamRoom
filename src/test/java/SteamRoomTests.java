@@ -219,7 +219,7 @@ public class SteamRoomTests extends TestCase {
         test.add("90");   // current humidity in the steam room = 90
         test.add("42");   // current temperature in the steam room = 42
         test.add("True"); // the schedule for later is selected
-        test.add("10");   // scheduled to be ready in 2 minute, but it would take at least 8 minutes to get the room ready
+        test.add("10");   // it would take at least 8 minutes to get the room ready so 10 minutes is enough
         test.add("4");    // do nothing for 1 iteration
         test.add("2");    // user stops the system
         test.add("5");    // the application is shut down
