@@ -122,7 +122,7 @@ public class SteamRoomTests extends TestCase {
         Testing testing = new Testing(test);
         assertEquals("""
                 Profile created.
-                Chosen profile: test2, temperature: 45, humidity: 98
+                Chosen profile: test_profile, temperature: 44, humidity: 97
                 Current temperature: 42.0
                 Current humidity: 95.0
                 The system has stopped successfully.
@@ -356,5 +356,73 @@ public class SteamRoomTests extends TestCase {
                 The system has stopped because there was no water supply.
                 -----------------------------
                 """, testing.output);
+    }
+
+    //C17 Testing to see if the function to read from the file works. If it does, it should
+    //return true as it means all the code until the return has been processed
+    public void testSeventeen() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Testing testing = new Testing(test);
+        assertTrue(testing.readProfiles());
+    }
+
+    //C18 Testing to see if the function to save a profile t0 the file works. If it does, it should
+    //return true as it means all the code until the return has been processed
+    public void testEighteen() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Profile profile = new Profile(44,97,"test_profile");
+        Testing testing = new Testing(test);
+        assertTrue(testing.saveProfile(profile));
+    }
+
+    //C19 Testing the function to see if the function for checking the data is correct. This particular
+    //scenario should say that the temperature is invalid
+    public void testNineteen() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Testing testing = new Testing(test);
+        assertEquals("Please insert a temperature >= 43 and <= 46.",
+                testing.isDataCorrect("test7", 40, 98));
+    }
+
+    //C20 Testing the function to see if the function for checking the data is correct. This particular
+    //scenario should say that the humidity is invalid
+    public void testTwenty() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Testing testing = new Testing(test);
+        assertEquals("Please insert a humidity >= 97 and <= 100.",
+                testing.isDataCorrect("test7", 44, 90));
+    }
+
+    //C21 Testing the function to see if the function for checking the data is correct. This particular
+    //scenario should say that the name is invalid
+    public void testTwentyOne() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Testing testing = new Testing(test);
+        assertEquals("The profile should be given a unique name.",
+                testing.isDataCorrect("Maria", 44, 97));
+    }
+
+    //C22 Testing the function to see if the function for checking the data is correct. This particular
+    //scenario should say that the data is valid
+    public void testTwentyTwo() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Testing testing = new Testing(test);
+        assertEquals("Data is correct.", testing.isDataCorrect("test7", 44, 97));
+    }
+
+    //C23 Testing the function to choose a profile
+    public void testTwentyThree() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        test.add("1");    // choose profile number 1 which corresponds to the default one
+        Testing testing = new Testing(test);
+        testing.chooseProfile();
+        assertEquals("Chosen profile: Default, temperature: 44, humidity: 98\n", testing.output);
     }
 }

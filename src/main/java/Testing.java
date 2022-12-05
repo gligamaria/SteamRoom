@@ -47,11 +47,10 @@ public class Testing {
                 startRunning();
             }
         }
-        System.out.println(output);
-        //return output;
+        // System.out.println(output);
     }
 
-    public void readProfiles(){
+    public boolean readProfiles(){
         try {
             File myObj = new File("profiles.txt");
             Scanner myReader = new Scanner(myObj);
@@ -63,21 +62,25 @@ public class Testing {
                 profiles.add(newProfile);
             }
             myReader.close();
+            return true;
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return false;
         }
     }
 
 
-    public void saveProfile(Profile profile){
+    public boolean saveProfile(Profile profile){
         try {
             FileWriter myWriter = new FileWriter("profiles.txt", true);
             myWriter.write(profile.getName() + "\n" + profile.getWantedTemperature() + "\n" + profile.getWantedHumidity() + "\n");
             myWriter.close();
+            return true;
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -111,7 +114,7 @@ public class Testing {
 
     }
 
-    public void createProfile(){
+    public Profile createProfile(){
 
         String name = input.get(inputIndex);
         inputIndex++;
@@ -137,7 +140,9 @@ public class Testing {
             profiles.add(profile);
             saveProfile(profile);
             output = output.concat("Profile created.\n");
+            return profile;
         }
+        return new Profile(44,97,"random");
 
     }
 
