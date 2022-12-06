@@ -122,7 +122,7 @@ public class SteamRoomTests extends TestCase {
         Testing testing = new Testing(test);
         assertEquals("""
                 Profile created.
-                Chosen profile: test_profile, temperature: 44, humidity: 97
+                Chosen profile: test_profile, temperature: 44, humidity: 97    
                 Current temperature: 42.0
                 Current humidity: 95.0
                 The system has stopped successfully.
@@ -155,7 +155,7 @@ public class SteamRoomTests extends TestCase {
         firstTest.add("5");     // the application is shut down
         Testing testing = new Testing(firstTest);
         assertEquals("""
-                The profile should be given a unique name.
+                The profile should be given a unique name.\n
                 Profile created.
                 """, testing.output);
     }
@@ -174,7 +174,7 @@ public class SteamRoomTests extends TestCase {
         firstTest.add("5");     // the application is shut down
         Testing testing = new Testing(firstTest);
         assertEquals("""
-                Please insert a temperature >= 43 and <= 46.
+                Please insert a temperature >= 43 and <= 46.\n
                 Profile created.
                 """, testing.output);
     }
@@ -194,6 +194,7 @@ public class SteamRoomTests extends TestCase {
         Testing testing = new Testing(firstTest);
         assertEquals("""
                 Please insert a humidity >= 97 and <= 100.
+                
                 Profile created.
                 """, testing.output);
     }
@@ -383,7 +384,7 @@ public class SteamRoomTests extends TestCase {
         ArrayList<String> test = new ArrayList<>();
         test.add("5");
         Testing testing = new Testing(test);
-        assertEquals("Please insert a temperature >= 43 and <= 46.",
+        assertEquals("Please insert a temperature >= 43 and <= 46.\n",
                 testing.isDataCorrect("test7", 40, 98));
     }
 
@@ -393,7 +394,7 @@ public class SteamRoomTests extends TestCase {
         ArrayList<String> test = new ArrayList<>();
         test.add("5");
         Testing testing = new Testing(test);
-        assertEquals("Please insert a humidity >= 97 and <= 100.",
+        assertEquals("Please insert a humidity >= 97 and <= 100.\n",
                 testing.isDataCorrect("test7", 44, 90));
     }
 
@@ -403,7 +404,7 @@ public class SteamRoomTests extends TestCase {
         ArrayList<String> test = new ArrayList<>();
         test.add("5");
         Testing testing = new Testing(test);
-        assertEquals("The profile should be given a unique name.",
+        assertEquals("The profile should be given a unique name.\n",
                 testing.isDataCorrect("Maria", 44, 97));
     }
 
@@ -413,16 +414,65 @@ public class SteamRoomTests extends TestCase {
         ArrayList<String> test = new ArrayList<>();
         test.add("5");
         Testing testing = new Testing(test);
-        assertEquals("Data is correct.", testing.isDataCorrect("test7", 44, 97));
+        assertEquals("Data is correct.\n", testing.isDataCorrect("test7", 44, 97));
     }
 
-    //C23 Testing the function to choose a profile
+    //C23 Testing the function to see if the function for checking the data is correct. This particular
+    //scenario should say that the name is invalid and so is the temperature
     public void testTwentyThree() throws InterruptedException {
         ArrayList<String> test = new ArrayList<>();
         test.add("5");
-        test.add("1");    // choose profile number 1 which corresponds to the default one
+        Testing testing = new Testing(test);
+        assertEquals("""
+                The profile should be given a unique name.
+                Please insert a temperature >= 43 and <= 46.
+                """, testing.isDataCorrect("Maria", 40, 97));
+    }
+
+    //C24 Testing the function to see if the function for checking the data is correct. This particular
+    //scenario should say that the name is invalid and so is the humidity
+    public void testTwentyFour() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Testing testing = new Testing(test);
+        assertEquals("""
+                The profile should be given a unique name.
+                Please insert a humidity >= 97 and <= 100.
+                """, testing.isDataCorrect("Maria", 44, 90));
+    }
+
+    //C25 Testing the function to see if the function for checking the data is correct. This particular
+    //scenario should say that the temperature is invalid and so is the humidity
+    public void testTwentyFive() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Testing testing = new Testing(test);
+        assertEquals("""
+                Please insert a temperature >= 43 and <= 46.
+                Please insert a humidity >= 97 and <= 100.
+                """, testing.isDataCorrect("test7", 40, 90));
+    }
+
+    //C26 Testing the function to see if the function for checking the data is correct. This particular
+    //scenario should say that all the data is invalid
+    public void testTwentySix() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        Testing testing = new Testing(test);
+        assertEquals("""
+                The profile should be given a unique name.
+                Please insert a temperature >= 43 and <= 46.
+                Please insert a humidity >= 97 and <= 100.
+                """, testing.isDataCorrect("Maria", 40, 90));
+    }
+
+    //C27 Testing the function to choose a profile
+    public void testTwentySeven() throws InterruptedException {
+        ArrayList<String> test = new ArrayList<>();
+        test.add("5");
+        test.add("2");    // choose profile number 1 which corresponds to the default one
         Testing testing = new Testing(test);
         testing.chooseProfile();
-        assertEquals("Chosen profile: Default, temperature: 44, humidity: 98\n", testing.output);
+        assertEquals("Chosen profile: Maria, temperature: 46, humidity: 98\n", testing.output);
     }
 }

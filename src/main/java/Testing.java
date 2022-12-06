@@ -96,21 +96,31 @@ public class Testing {
 
     public String isDataCorrect(String name, int wantedTemperature, int wantedHumidity){
 
+        String answer = "";
+        boolean ok = true;
+
         for(Profile profile:profiles){
             if(name.equals("")){
-                return "The profile should be given a name.";
+                ok = false;
+                answer = answer.concat("The profile should be given a name.\n");
             }
             if(name.equals(profile.getName())){
-                return "The profile should be given a unique name.";
+                ok = false;
+                answer = answer.concat("The profile should be given a unique name.\n");
             }
         }
         if(wantedTemperature < 43 || wantedTemperature > 46){
-            return "Please insert a temperature >= 43 and <= 46.";
+            ok = false;
+            answer = answer.concat("Please insert a temperature >= 43 and <= 46.\n");
         }
         if(wantedHumidity < 97 || wantedHumidity > 100){
-            return "Please insert a humidity >= 97 and <= 100.";
+            ok = false;
+            answer = answer.concat("Please insert a humidity >= 97 and <= 100.\n");
         }
-        return "Data is correct.";
+        if(ok){
+            answer = answer.concat("Data is correct.\n");
+        }
+        return answer;
 
     }
 
@@ -123,7 +133,7 @@ public class Testing {
         int wantedHumidity = Integer.parseInt(input.get(inputIndex));
         inputIndex++;
 
-        while (!isDataCorrect(name, wantedTemperature, wantedHumidity).equals("Data is correct.")){
+        while (!isDataCorrect(name, wantedTemperature, wantedHumidity).equals("Data is correct.\n")){
             output = output.concat(isDataCorrect(name, wantedTemperature, wantedHumidity) + "\n");
             name = input.get(inputIndex);
             inputIndex++;
